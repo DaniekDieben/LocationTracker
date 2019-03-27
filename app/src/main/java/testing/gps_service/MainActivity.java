@@ -15,12 +15,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class MainActivity extends AppCompatActivity {
 
     private Button btn_start, btn_stop;
     private TextView textView;
     private BroadcastReceiver broadcastReceiver;
 
+    private FirebaseFirestore db;
     @Override
     protected void onResume() {
         super.onResume();
@@ -53,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         btn_start = (Button) findViewById(R.id.button);
         btn_stop = (Button) findViewById(R.id.button2);
         textView = (TextView) findViewById(R.id.textView);
+
+        FirebaseApp.initializeApp(this);
+        db = FirebaseFirestore.getInstance();
 
         if(!runtime_permissions())
             enable_buttons();
