@@ -13,11 +13,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +33,7 @@ public class GPS_Service extends Service {
 
     private LocationListener listener;
     private LocationManager locationManager;
+
 
     private FirebaseFirestore db;
 
@@ -99,6 +104,7 @@ public class GPS_Service extends Service {
                     vak = Integer.toString(xVak)+yVak;
                 }
                 service.sendToDb(vak);
+                service.readFromDB(vak);
                 i.putExtra("coordinates",location.getLongitude()+" "+location.getLatitude()+" vak: "+ vak);
                 sendBroadcast(i);
             }
@@ -148,6 +154,24 @@ public class GPS_Service extends Service {
                         Log.w("Firebase", "Error adding document", e);
                     }
                 });
+    }
+    public void readFromDB(String vak){
+        db.collection("locations")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d("Firebase dataset", document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.w("Firebase", "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+
+
     }
 
     @Override
