@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
         btn_start = (Button) findViewById(R.id.button);
         btn_stop = (Button) findViewById(R.id.button2);
         textView = (TextView) findViewById(R.id.textView);
+
+        Typeface myCustomFont=Typeface.createFromAsset(getAssets(), "fonts/Adv.ttf");
+        textView.setTypeface(myCustomFont);
 
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();

@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -33,8 +34,6 @@ public class GPS_Service extends Service {
 
     private LocationListener listener;
     private LocationManager locationManager;
-
-
     private FirebaseFirestore db;
 
     @Nullable
@@ -69,7 +68,7 @@ public class GPS_Service extends Service {
                 double addLat = (endLat-startLat)/10;
 
                 int xVak = 0;
-                char yVak = 'a';
+                char yVak = 0;
                 String vak;
 
 
@@ -99,7 +98,8 @@ public class GPS_Service extends Service {
                     }
 
                     System.out.println("Lon= "+lon+ " Lat= "+lat);
-                    System.out.println("Vak= "+yVak+ " "+xVak);
+                    System.out.println("xVak= "+xVak);
+                    System.out.println("yVak= " +yVak);
 
                     vak = Integer.toString(xVak)+yVak;
                 }
@@ -155,8 +155,13 @@ public class GPS_Service extends Service {
                     }
                 });
     }
-    public void readFromDB(String vak){
-        db.collection("locations")
+
+    public void readFromDB(String vak) {
+        // Get data, order data "vak" (Poging 1 )
+        CollectionReference locationsRef = db.collection("locations");
+        locationsRef.whereGreaterThan("time", System.currentTimeMillis() - 30000)
+                .orderBy("time")
+                .orderBy("vak")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -170,9 +175,8 @@ public class GPS_Service extends Service {
                         }
                     }
                 });
-
-
     }
+
 
     @Override
     public void onDestroy() {
